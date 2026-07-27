@@ -1,0 +1,8 @@
+# Build artifacts
+/showroom-waiting
+
+# Recording files
+*.ts
+
+# Runtime logs
+/log
