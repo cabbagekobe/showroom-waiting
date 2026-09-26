@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -258,5 +259,38 @@ func TestFetchStreamingURLs(t *testing.T) {
 	}
 	if got, ok := SelectHLS(list, "best"); !ok || got.URL != "https://best.m3u8" {
 		t.Errorf("SelectHLS from fetched list failed: %+v ok=%v", got, ok)
+	}
+}
+
+func TestFFReportEnv(t *testing.T) {
+	env := []string{"HOME=/home/u", "FFREPORT=file=old.log", "PATH=/bin"}
+	got := ffreportEnv(env, "/rec/x.ts")
+	want := []string{"HOME=/home/u", "PATH=/bin", "FFREPORT=file=/rec/x.ts.log:level=40"}
+	if strings.Join(got, "\n") != strings.Join(want, "\n") {
+		t.Errorf("ffreportEnv = %q, want %q", got, want)
+	}
+	// The input slice must not be modified.
+	if env[1] != "FFREPORT=file=old.log" {
+		t.Errorf("ffreportEnv modified its input: %q", env)
+	}
+}
+
+func TestFFReportFile(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		want string
+	}{
+		{"plain path", "/rec/akari/akari_1.ts", `/rec/akari/akari_1.ts.log`},
+		{"colon is escaped", "/rec/a:b/x.ts", `/rec/a\:b/x.ts.log`},
+		{"percent is doubled", "/rec/100%/x.ts", `/rec/100%%/x.ts.log`},
+		{"quote and backslash are escaped", `/rec/it's\x.ts`, `/rec/it\'s\\x.ts.log`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ffreportFile(tt.path); got != tt.want {
+				t.Errorf("ffreportFile(%q) = %q, want %q", tt.path, got, tt.want)
+			}
+		})
 	}
 }

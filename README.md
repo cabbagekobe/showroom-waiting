@@ -64,6 +64,8 @@ Recordings are **saved into a `url_key` subdirectory created under the base dire
 Example: specifying `https://www.showroom-live.com/r/46_tomisatonao` saves to
 `<base directory>/46_tomisatonao/46_tomisatonao_1784887247.ts`.
 
+A verbose ffmpeg log is written next to the recording as `<recording>.ts.log` (segment requests, byte counts, fetch failures), so gaps in a recording can be diagnosed afterwards.
+
 The base directory is determined in the following order of priority:
 
 1. `-o` flag
@@ -179,6 +181,8 @@ showroom-waiting nba_b_hinaho0303 -timeout 30
 
 例: `https://www.showroom-live.com/r/46_tomisatonao` を指定すると
 `<ベースディレクトリ>/46_tomisatonao/46_tomisatonao_1784887247.ts` に保存されます。
+
+録画ファイルの隣に ffmpeg の詳細ログが `<録画ファイル>.ts.log` として保存されます（セグメントごとの取得記録・バイト数・取得失敗）。録画に欠落があった場合の原因調査に使えます。
 
 ベースディレクトリは次の優先度で決まります。
 
