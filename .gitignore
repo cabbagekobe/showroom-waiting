@@ -3,6 +3,7 @@
 
 # Recording files
 *.ts
+*.ts.log
 
 # Runtime logs
 /log
